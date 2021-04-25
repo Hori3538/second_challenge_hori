@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="map_file" default="$(find second_challenge_hori)/map/map.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
+    <!-- <param name="use_sim_time" value="true" type="bool"/> -->
+    <node pkg="second_challenge_hori" type="instant_gpp" name="instant_gpp" output="screen">
+    </node>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/instant_gpp.rviz" output="screen"/>
+</launch>
