@@ -21,8 +21,8 @@ class Instant_gpp
 
         ros::NodeHandle nh;
         ros::NodeHandle private_nh;
-        ros::Subscriber sub_map;
-        ros::Publisher pub_path;
+        ros::Subscriber map_sub;
+        ros::Publisher path_pub;
 
         nav_msgs::OccupancyGrid map;
         nav_msgs::Path path;

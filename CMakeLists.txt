@@ -140,6 +140,7 @@ include_directories(
 
 add_executable(localizer src/localizer.cpp)
 add_executable(instant_gpp src/instant_gpp.cpp)
+add_executable(local_goal_creator src/local_goal_creator.cpp)
 # add_executable(global_path_planner src/global_path_planner.cpp)
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -153,9 +154,11 @@ add_executable(instant_gpp src/instant_gpp.cpp)
 
 add_dependencies(localizer ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 add_dependencies(instant_gpp ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(local_goal_creator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 # add_dependencies(global_path_planner ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(localizer ${catkin_LIBRARIES})
 target_link_libraries(instant_gpp ${catkin_LIBRARIES})
+target_link_libraries(local_goal_creator ${catkin_LIBRARIES})
 # target_link_libraries(global_path_planner ${catkin_LIBRARIES})
 ## Specify libraries to link a library or executable target against
 # target_link_libraries(${PROJECT_NAME}_node

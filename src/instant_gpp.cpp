@@ -2,20 +2,17 @@
 
 Instant_gpp::Instant_gpp():private_nh("~")
 {
-    private_nh.param("hz", hz, {1});
+    private_nh.getParam("hz", hz);
 
-    sub_map = nh.subscribe("/map", 100, &Instant_gpp::map_callback, this);
-    pub_path = nh.advertise<nav_msgs::Path>("/path", 100);
+    map_sub = nh.subscribe("/map", 100, &Instant_gpp::map_callback, this);
+    path_pub = nh.advertise<nav_msgs::Path>("/path", 100);
     path.header.frame_id = "map";
 }
 
 void Instant_gpp::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
 {
-    std::cout << "map_callback" << std::endl;
     map = *msg;
     make_path();
-    // pub_path.publish(path);
-    std::cout << "end_callback" << std::endl;
     map_get_check = true;
 }
 
@@ -26,7 +23,6 @@ void Instant_gpp::make_path()
     double res = map.info.resolution;
     geometry_msgs::PoseStamped pose;
     for(int i=0; i<5; i++){
-        std::cout << "i: " << i << std::endl;
         double start_x = goal_points[i].first;
         double start_y = goal_points[i].second;
         double goal_x = goal_points[i+1].first;
@@ -37,14 +33,12 @@ void Instant_gpp::make_path()
                 for(double x=start_x; x<goal_x; x+=res){
                     pose.pose.position.x = x;
                     path.poses.push_back(pose);
-                    // std::cout << "c" << std::endl;
                 }
             }
             else{
                 for(double x=start_x; x>goal_x; x-=res){
                     pose.pose.position.x = x;
                     path.poses.push_back(pose);
-                    // std::cout << "c" << std::endl;
                 }
             }
         }
@@ -71,7 +65,7 @@ void Instant_gpp::process()
     ros::Rate rate(hz);
     while(ros::ok()){
         if(map_get_check){
-        pub_path.publish(path);
+        path_pub.publish(path);
         }
         ros::spinOnce();
         rate.sleep();

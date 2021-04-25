@@ -5,6 +5,11 @@
     <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
     <!-- <param name="use_sim_time" value="true" type="bool"/> -->
     <node pkg="second_challenge_hori" type="instant_gpp" name="instant_gpp" output="screen">
+        <param name="hz" value="1" type="int"/>
+    </node>
+    <node pkg="second_challenge_hori" type="local_goal_creator" name="local_goal_creator">
+        <param name="hz" value="1" type="int"/>
+        <param name="local_goal_dist" value="10" type="double"/>
     </node>
     <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/instant_gpp.rviz" output="screen"/>
 </launch>
