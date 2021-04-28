@@ -203,6 +203,16 @@ Visualization Manager:
       Topic: /local_goal
       Unreliable: false
       Value: true
+    - Alpha: 0.699999988079071
+      Class: rviz/Map
+      Color Scheme: map
+      Draw Behind: false
+      Enabled: true
+      Name: Map
+      Topic: /local_map
+      Unreliable: false
+      Use Timestamp: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -231,7 +241,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 23.472427368164062
+      Distance: 51.890052795410156
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -267,5 +277,5 @@ Window Geometry:
   Views:
     collapsed: true
   Width: 1393
-  X: 276
-  Y: 112
+  X: 211
+  Y: 105

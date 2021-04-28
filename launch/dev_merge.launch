@@ -37,5 +37,12 @@
         <param name="hz" value="10" type="int"/>
         <param name="local_goal_dist" value="10" type="double"/>
     </node>
+    <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
+        <param name="hz" value="10" type="int"/>
+        <param name="map_size" value="4" type="int"/>
+        <param name="map_reso" value="0.05" type="double"/>
+        <param name="laser_density" value="1.5" type="double"/>
+        <param name="roomba_radius" value="0.25" type="double"/>
+    </node>
     <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/dev_merge.rviz" output="screen"/>
 </launch>
