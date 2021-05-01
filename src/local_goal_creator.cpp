@@ -4,10 +4,10 @@ Local_goal_creator::Local_goal_creator():private_nh("~")
 {
     private_nh.getParam("hz", hz);
     private_nh.getParam("local_goal_dist", local_goal_dist);
-    path_sub = nh.subscribe("/path", 100, &Local_goal_creator::path_callback, this);
-    estimated_pose_sub = nh.subscribe("/mcl_pose", 100, &Local_goal_creator::estimated_pose_callback, this);
+    path_sub = nh.subscribe("/path", 1, &Local_goal_creator::path_callback, this);
+    estimated_pose_sub = nh.subscribe("/mcl_pose", 1, &Local_goal_creator::estimated_pose_callback, this);
 
-    local_goal_pub = nh.advertise<geometry_msgs::PoseStamped>("/local_goal", 100);
+    local_goal_pub = nh.advertise<geometry_msgs::PoseStamped>("/local_goal", 1);
 }
 
 void Local_goal_creator::path_callback(const nav_msgs::Path::ConstPtr &msg)
@@ -34,6 +34,7 @@ void Local_goal_creator::select_local_goal()
     }
     local_goal = path.poses[goal_index];
     local_goal.header.frame_id = "map";
+    local_goal.header.stamp = ros::Time::now();
 }
 
 void Local_goal_creator::process()
