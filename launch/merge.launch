@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<launch>
+    <arg name="map_file" default="$(find second_challenge_hori)/map/map.yaml"/>
+    <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
+    <node pkg="second_challenge_hori" type="localizer" name="localizer" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/localizer.yaml" command="load"/>
+    </node>
+    <node pkg="second_challenge_hori" type="instant_gpp" name="instant_gpp">
+        <param name="hz" value="1" type="int"/>
+    </node>
+    <node pkg="second_challenge_hori" type="local_goal_creator" name="local_goal_creator">
+        <param name="hz" value="10" type="int"/>
+        <param name="local_goal_dist" value="4.0" type="double"/>
+    </node>
+    <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/local_map_creator.yaml" command="load"/>
+    </node>
+    <node pkg="second_challenge_hori" type="local_path_planner" name="local_path_planner" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/local_path_planner.yaml" command="load"/>
+    </node>
+    <node name="urg_node" pkg="urg_node" type="urg_node">
+        <param name="serial_port" value="/dev/ttyACM0"/>
+    </node>
+    <node name="roomba_500driver_meiji" pkg="roomba_500driver_meiji" type="main500">
+        <param name="serial_port" value="/dev/ttyUSB0"/>
+    </node>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/dev_merge.rviz" output="screen"/>
+    <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0 0 0 0 1 /base_link /laser"/>
+</launch>
