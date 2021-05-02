@@ -1,17 +1,17 @@
 hz: 10
 
 roomba_radius: 0.17
-max_speed: 1.0
+max_speed: 0.4
 min_speed: -0.1
-max_yawrate: 5.0
-max_accel: 1.0
-max_dyawrate: 5.0
+max_yawrate: 2.0
+max_accel: 4
+max_dyawrate: 8.0
 
-speed_reso: 0.1
-yawrate_reso: 0.1
+speed_reso: 0.01
+yawrate_reso: 0.01
 dt: 0.1
-predict_time: 2.0
+predict_time: 1.0
 
-heading_score_gain: 0.4
-velocity_score_gain: 0.3
-dist_score_gain: 0.3
+heading_score_gain: 1.0
+velocity_score_gain: 1.0
+dist_score_gain: 1.0

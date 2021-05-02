@@ -141,7 +141,7 @@ double LocalPathPlanner::calc_dist_score(std::vector<State> &trajectory)
 std::vector<double> LocalPathPlanner::decide_input()
 {
     std::vector<double> input{0.0, 0.0};
-    double goal_to_dist = sqrt(std::pow(local_goal_point.point.x, 2) + 
+    double goal_to_dist = sqrt(std::pow(local_goal_point.point.x, 2) +
                                std::pow(local_goal_point.point.y, 2));
     if(goal_to_dist <= roomba_radius){
         return input;
@@ -169,7 +169,7 @@ std::vector<double> LocalPathPlanner::decide_input()
         }
     }
     previous_input = input;
-
+    std::cout << "Input: " << input[0] << "  " << input[1] << std::endl;
     return input;
 }
 
