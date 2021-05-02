@@ -11,5 +11,5 @@
         <param name="hz" value="10" type="int"/>
         <param name="local_goal_dist" value="10" type="double"/>
     </node>
-    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/instant_gpp.rviz" output="screen"/>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/instant_gpp.rviz" output="screen"/>
 </launch>

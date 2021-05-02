@@ -1,11 +1,8 @@
 <?xml version="1.0"?>
 
 <launch>
-    <arg name="map_file" default="$(find second_challenge_hori)/map/map.yaml"/>
-    <node pkg="map_server" name="map_server" type="map_server" args="$(arg map_file)" output="screen"/>
-    <node pkg="second_challenge_hori" type="localizer" name="localizer" output="screen">
-        <rosparam file="$(find second_challenge_hori)/config/param/localizer.yaml" command="load"/>
-
+    <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/local_map_creator.yaml" command="load"/>
     </node>
     <node name="urg_node" pkg="urg_node" type="urg_node">
         <param name="serial_port" value="/dev/ttyACM0"/>
@@ -13,7 +10,6 @@
     <node name="roomba_500driver_meiji" pkg="roomba_500driver_meiji" type="main500">
         <param name="serial_port" value="/dev/ttyUSB0"/>
     </node>
-    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/localizer.rviz" output="screen"/>
     <node pkg="joy" name="joy_node" type="joy_node"/>
     <node pkg="roomba_teleop_meiji" type="electric_joystick_drive" name="electric_joystick_drive"/>
     <node pkg="tf2_ros" type="static_transform_publisher" name="static_transform_publisher" args="0 0 0 0 0 0 1 /base_link /laser"/>

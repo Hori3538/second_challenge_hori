@@ -1,0 +1,6 @@
+hz: 10
+
+map_size: 4
+map_reso: 0.05
+laser_density: 1.5
+roomba_radius: 0.25

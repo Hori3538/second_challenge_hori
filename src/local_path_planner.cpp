@@ -141,6 +141,12 @@ double LocalPathPlanner::calc_dist_score(std::vector<State> &trajectory)
 std::vector<double> LocalPathPlanner::decide_input()
 {
     std::vector<double> input{0.0, 0.0};
+    double goal_to_dist = sqrt(std::pow(local_goal_point.point.x, 2) + 
+                               std::pow(local_goal_point.point.y, 2));
+    if(goal_to_dist <= roomba_radius){
+        return input;
+    }
+
     std::vector<double> dynamic_window = calc_dynamic_window();
     double best_score = 0;
     trajectories.clear();

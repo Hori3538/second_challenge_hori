@@ -6,59 +6,20 @@
      <node pkg="rosbag" name="play" type="play" args="--clock $(env HOME)/map.bag"/>
     <param name="use_sim_time" value="true" type="bool"/>
     <node pkg="second_challenge_hori" type="localizer" name="localizer" output="screen">
-        <param name="hz" value="10" type="int"/>
-        <param name="particle_number" value="500" type="int"/>
-        <param name="init_x" value="0.0" type="double"/>
-        <param name="init_y" value="0.0" type="double"/>
-        <param name="init_yaw" value="0.0" type="double"/>
-        <param name="init_x_sigma" value="0.8" type="double"/>
-        <param name="init_y_sigma" value="0.8" type="double"/>
-        <param name="init_yaw_sigma" value="0.8" type="double"/>
-        <param name="move_noise_ratio" value="0.1" type="double"/>
-        <param name="laser_noise_ratio" value="0.1" type="double"/>
-        <param name="search_range" value="30.0" type="double"/>
-        <param name="laser_step" value="10" type="int"/>
-        <param name="alpha_slow_th" value="0.001" type="double"/>
-        <param name="alpha_fast_th" value="0.1" type="double"/>
-        <param name="reset_x_sigma" value="0.1" type="double"/>
-        <param name="reset_y_sigma" value="0.1" type="double"/>
-        <param name="reset_yaw_sigma" value="0.1" type="double"/>
-        <param name="expansion_x_speed" value="0.01" type="double"/>
-        <param name="expansion_y_speed" value="0.01" type="double"/>
-        <param name="expansion_yaw_speed" value="0.02" type="double"/>
-        <param name="estimated_pose_w_th" value="1.8" type="double"/>
-        <param name="reset_limit" value="200" type="int"/>
-
+        <rosparam file="$(find second_challenge_hori)/config/param/localizer.yaml" command="load"/>
     </node>
     <node pkg="second_challenge_hori" type="instant_gpp" name="instant_gpp">
         <param name="hz" value="1" type="int"/>
     </node>
     <node pkg="second_challenge_hori" type="local_goal_creator" name="local_goal_creator">
         <param name="hz" value="10" type="int"/>
-        <param name="local_goal_dist" value="4" type="double"/>
+        <param name="local_goal_dist" value="4.0" type="double"/>
     </node>
     <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
-        <param name="hz" value="10" type="int"/>
-        <param name="map_size" value="4" type="int"/>
-        <param name="map_reso" value="0.05" type="double"/>
-        <param name="laser_density" value="1.5" type="double"/>
-        <param name="roomba_radius" value="0.25" type="double"/>
+        <rosparam file="$(find second_challenge_hori)/config/param/local_map_creator.yaml" command="load"/>
     </node>
     <node pkg="second_challenge_hori" type="local_path_planner" name="local_path_planner" output="screen">
-        <param name="hz" value="10" type="int"/>
-        <param name="roomba_radius" value="0.25" type="double"/>
-        <param name="max_speed" value="1.0" type="double"/>
-        <param name="min_speed" value="-0.1" type="double"/>
-        <param name="max_yawrate" value="5.0" type="double"/>
-        <param name="max_accel" value="1.0" type="double"/>
-        <param name="max_dyawrate" value="5.0" type="double"/>
-        <param name="speed_reso" value="0.1" type="double"/>
-        <param name="yawrate_reso" value="0.1" type="double"/>
-        <param name="dt" value="0.1" type="double"/>
-        <param name="predict_time" value="2.0" type="double"/>
-        <param name="heading_score_gain" value="0.4" type="double"/>
-        <param name="velocity_score_gain" value="0.3" type="double"/>
-        <param name="dist_score_gain" value="0.3" type="double"/>
+        <rosparam file="$(find second_challenge_hori)/config/param/local_path_planner.yaml" command="load"/>
     </node>
-    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/dev_merge.rviz" output="screen"/>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/dev_merge.rviz" output="screen"/>
 </launch>

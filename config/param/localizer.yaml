@@ -1,0 +1,28 @@
+hz: 10
+particle_number: 500
+
+init_x: 0.0
+init_y: 0.0
+init_yaw: 0.0
+init_x_sigma: 0.5
+init_y_sigma: 0.5
+init_yaw_sigma: 0.5
+
+move_noise_ratio: 0.1
+laser_noise_ratio: 0.1
+
+search_range: 30.0
+laser_step: 10
+alpha_slow_th: 0.001
+alpha_fast_th: 0.1
+
+reset_x_sigma: 0.1
+reset_y_sigma: 0.1
+reset_yaw_sigma: 0.1
+
+expansion_x_speed: 0.01
+expansion_y_speed: 0.01
+expansion_yaw_speed: 0.01
+
+estimated_pose_w_th: 1.4
+reset_limit: 200

@@ -6,29 +6,7 @@
     <node pkg="rosbag" name="play" type="play" args="--clock $(env HOME)/map.bag"/>
     <param name="use_sim_time" value="true" type="bool"/>
     <node pkg="second_challenge_hori" type="localizer" name="localizer" output="screen">
-        <param name="hz" value="10" type="int"/>
-        <param name="particle_number" value="500" type="int"/>
-        <param name="init_x" value="0.0" type="double"/>
-        <param name="init_y" value="0.0" type="double"/>
-        <param name="init_yaw" value="0.0" type="double"/>
-        <param name="init_x_sigma" value="0.8" type="double"/>
-        <param name="init_y_sigma" value="0.8" type="double"/>
-        <param name="init_yaw_sigma" value="0.8" type="double"/>
-        <param name="move_noise_ratio" value="0.1" type="double"/>
-        <param name="laser_noise_ratio" value="0.1" type="double"/>
-        <param name="search_range" value="30.0" type="double"/>
-        <param name="laser_step" value="10" type="int"/>
-        <param name="alpha_slow_th" value="0.001" type="double"/>
-        <param name="alpha_fast_th" value="0.1" type="double"/>
-        <param name="reset_x_sigma" value="0.1" type="double"/>
-        <param name="reset_y_sigma" value="0.1" type="double"/>
-        <param name="reset_yaw_sigma" value="0.1" type="double"/>
-        <param name="expansion_x_speed" value="0.01" type="double"/>
-        <param name="expansion_y_speed" value="0.01" type="double"/>
-        <param name="expansion_yaw_speed" value="0.02" type="double"/>
-        <param name="estimated_pose_w_th" value="1.8" type="double"/>
-        <param name="reset_limit" value="200" type="int"/>
-
+        <rosparam file="$(find second_challenge_hori)/config/param/localizer.yaml" command="load"/>
     </node>
-    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/localizer.rviz" output="screen"/>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/localizer.rviz" output="screen"/>
 </launch>
