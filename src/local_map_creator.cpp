@@ -7,6 +7,7 @@ Local_map_creator::Local_map_creator():private_nh("~")
     private_nh.getParam("map_reso", map_reso);
     private_nh.getParam("laser_density", laser_density);
     private_nh.getParam("roomba_radius", roomba_radius);
+    private_nh.getParam("ignore_angle_mergin", ignore_angle_mergin);
 
     laser_sub = nh.subscribe("scan", 10, &Local_map_creator::laser_callback, this);
     local_map_pub = nh.advertise<nav_msgs::OccupancyGrid>("local_map", 10);
@@ -60,10 +61,35 @@ bool Local_map_creator::check_map_range(double x, double y)
         return false;
     }
 }
+
+bool Local_map_creator::is_ignore_angle(double angle)
+{
+   // if(!(angle > -3/4 * M_PI + ignore_angle_mergin && angle < 3/4 * M_PI - ignore_angle_mergin)){
+   //     return true;
+   // }
+   // if(angle > -1/4 * M_PI - ignore_angle_mergin && angle < -1/4 * M_PI + ignore_angle_mergin){
+   //     return true;
+   // }
+   // if(angle > 1/4 * M_PI - ignore_angle_mergin && angle < 1/4 * M_PI + ignore_angle_mergin){
+   //     return true;
+   // }
+   // return false;
+   if(angle > -3.0/4 * M_PI + ignore_angle_mergin && angle < -1.0/4 * M_PI - ignore_angle_mergin){
+       return false;
+   }
+   if(angle > -1.0/4 * M_PI + ignore_angle_mergin && angle < 1.0/4 * M_PI - ignore_angle_mergin){
+       return false;
+   }
+   if(angle > 1.0/4 * M_PI + ignore_angle_mergin && angle < 3.0/4 * M_PI - ignore_angle_mergin){
+       return false;
+   }
+   return true;
+}
+
 void Local_map_creator::create_line(double yaw, double laser_range)
 {
     double search_step = map_reso;
-    if(laser_range <= roomba_radius){
+    if(laser_range <= roomba_radius || is_ignore_angle(yaw)){
         laser_range = map_size;
     }
     for(double dist_from_start=0; dist_from_start<map_size; dist_from_start+=search_step){

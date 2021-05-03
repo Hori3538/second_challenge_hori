@@ -149,6 +149,11 @@ std::vector<double> LocalPathPlanner::decide_input()
 
     std::vector<double> dynamic_window = calc_dynamic_window();
     double best_score = 0;
+
+    double bhs = 0;
+    double bds = 0;
+    double bvs =0;
+
     trajectories.clear();
 
     for(double speed=dynamic_window[0]; speed<=dynamic_window[1]; speed+=speed_reso){
@@ -165,11 +170,16 @@ std::vector<double> LocalPathPlanner::decide_input()
                 best_score = final_score;
                 input = {speed, yawrate};
                 best_trajectory = trajectory;
+
+                bhs = heading_score;
+                bds = dist_score;
+                bvs = velocity_score;
             }
         }
     }
     previous_input = input;
-    std::cout << "Input: " << input[0] << "  " << input[1] << std::endl;
+    std::cout << "h " << bhs << " d " << bds << " v " << bvs << std::endl;
+    // std::cout << "Input: " << input[0] << "  " << input[1] << std::endl;
     return input;
 }
 

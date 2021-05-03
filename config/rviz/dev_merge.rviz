@@ -7,9 +7,8 @@ Panels:
         - /Global Options1
         - /Status1
         - /PoseArray1
-        - /Pose1
         - /LaserScan1
-        - /Pose2
+        - /Pose1
         - /Path3
       Splitter Ratio: 0.5
     Tree Height: 611
@@ -82,22 +81,6 @@ Visualization Manager:
       Shaft Radius: 0.009999999776482582
       Shape: Arrow (Flat)
       Topic: /p_pose_array
-      Unreliable: false
-      Value: true
-    - Alpha: 1
-      Axes Length: 1
-      Axes Radius: 0.10000000149011612
-      Class: rviz/Pose
-      Color: 255; 0; 0
-      Enabled: true
-      Head Length: 0.30000001192092896
-      Head Radius: 0.10000000149011612
-      Name: Pose
-      Queue Size: 10
-      Shaft Length: 1
-      Shaft Radius: 0.05000000074505806
-      Shape: Arrow
-      Topic: /mcl_pose
       Unreliable: false
       Value: true
     - Angle Tolerance: 0.10000000149011612
@@ -274,6 +257,22 @@ Visualization Manager:
       Topic: /local_paths
       Unreliable: false
       Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Queue Size: 10
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic: /estimated_pose
+      Unreliable: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -302,7 +301,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 9.912975311279297
+      Distance: 13.141982078552246
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -310,9 +309,9 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: 9.857597351074219
-        Y: 4.81036376953125
-        Z: -1.1272577047348022
+        X: 6.071325778961182
+        Y: 4.380238056182861
+        Z: -0.6682146191596985
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

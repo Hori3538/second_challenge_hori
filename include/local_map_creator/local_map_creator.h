@@ -19,12 +19,14 @@ class Local_map_creator
         void init_map();
         int xy_to_map_index(double x, double y);
         bool check_map_range(double x, double y);
+        bool is_ignore_angle(double angle);
 
         int hz;
         int map_size;
         double map_reso;
         double laser_density;
         double roomba_radius;
+        double ignore_angle_mergin;
 
         bool laser_get_check = false;
 

@@ -29,17 +29,17 @@ Localizer::Localizer():private_nh("~")
     private_nh.getParam("reset_limit", reset_limit);
 
 
-    map_sub = nh.subscribe("/map", 100, &Localizer::map_callback, this);
-    laser_sub = nh.subscribe("/scan", 100, &Localizer::laser_callback, this);
-    odometry_sub = nh.subscribe("/roomba/odometry", 100, &Localizer::odometry_callback, this);
+    map_sub = nh.subscribe("/map", 1, &Localizer::map_callback, this);
+    laser_sub = nh.subscribe("/scan", 1, &Localizer::laser_callback, this);
+    odometry_sub = nh.subscribe("/roomba/odometry", 1, &Localizer::odometry_callback, this);
 
-    mcl_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/mcl_pose", 100);
+    estimated_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/estimated_pose", 100);
     p_pose_array_pub = nh.advertise<geometry_msgs::PoseArray>("/p_pose_array", 100);
 
-    mcl_pose.pose.position.x = 0.0;
-    mcl_pose.pose.position.y = 0.0;
-    quaternionTFToMsg(tf::createQuaternionFromYaw(0.0), mcl_pose.pose.orientation);
-    mcl_pose.header.frame_id = "map";
+    estimated_pose.pose.position.x = 0.0;
+    estimated_pose.pose.position.y = 0.0;
+    quaternionTFToMsg(tf::createQuaternionFromYaw(0.0), estimated_pose.pose.orientation);
+    estimated_pose.header.frame_id = "map";
     p_pose_array.header.frame_id = "map";
     p_array.reserve(particle_number);
     p_pose_array.poses.reserve(particle_number);
@@ -179,9 +179,9 @@ void Localizer::adaptive_resampling()
             Particle p = p_array[index];
             p.w = 1.0 / particle_number;
 
-            double x = mcl_pose.pose.position.x;
-            double y = mcl_pose.pose.position.y;
-            double yaw = create_yaw_from_msg(mcl_pose.pose.orientation);
+            double x = estimated_pose.pose.position.x;
+            double y = estimated_pose.pose.position.y;
+            double yaw = create_yaw_from_msg(estimated_pose.pose.orientation);
 
             p.set_p(x, y, yaw, reset_x_sigma, reset_y_sigma, reset_yaw_sigma);
 
@@ -209,7 +209,7 @@ void Localizer::observation_update()
         p.w = weight;
     }
     estimate_pose();
-    double estimated_pose_w = calc_w(mcl_pose) / (laser.ranges.size() / laser_step);
+    double estimated_pose_w = calc_w(estimated_pose) / (laser.ranges.size() / laser_step);
     if(alpha_slow == 0){
         alpha_slow = alpha;
     }
@@ -250,9 +250,9 @@ void Localizer::estimate_pose()
         }
     }
 
-    mcl_pose.pose.position.x = x;
-    mcl_pose.pose.position.y = y;
-    quaternionTFToMsg(tf::createQuaternionFromYaw(yaw), mcl_pose.pose.orientation);
+    estimated_pose.pose.position.x = x;
+    estimated_pose.pose.position.y = y;
+    quaternionTFToMsg(tf::createQuaternionFromYaw(yaw), estimated_pose.pose.orientation);
 }
 void Localizer::process()
 {
@@ -264,9 +264,9 @@ void Localizer::process()
         if(map_get_ok && odometry_get_ok){
             try{
                 //map座標で見たbase_linkの位置の取得
-                double map_to_base_x = mcl_pose.pose.position.x;
-                double map_to_base_y = mcl_pose.pose.position.y;
-                double map_to_base_yaw = create_yaw_from_msg(mcl_pose.pose.orientation);
+                double map_to_base_x = estimated_pose.pose.position.x;
+                double map_to_base_y = estimated_pose.pose.position.y;
+                double map_to_base_yaw = create_yaw_from_msg(estimated_pose.pose.orientation);
                 //odom座標で見たbase_linkの位置の取得
                 double odom_to_base_x = current_odometry.pose.pose.position.x;
                 double odom_to_base_y = current_odometry.pose.pose.position.y;
@@ -298,7 +298,7 @@ void Localizer::process()
             }
             create_p_pose_array_from_p_array(p_array);
             p_pose_array_pub.publish(p_pose_array);
-            mcl_pose_pub.publish(mcl_pose);
+            estimated_pose_pub.publish(estimated_pose);
         }
         ros::spinOnce();
         rate.sleep();

@@ -5,7 +5,7 @@ Local_goal_creator::Local_goal_creator():private_nh("~")
     private_nh.getParam("hz", hz);
     private_nh.getParam("local_goal_dist", local_goal_dist);
     path_sub = nh.subscribe("/path", 1, &Local_goal_creator::path_callback, this);
-    estimated_pose_sub = nh.subscribe("/mcl_pose", 1, &Local_goal_creator::estimated_pose_callback, this);
+    estimated_pose_sub = nh.subscribe("/estimated_pose", 1, &Local_goal_creator::estimated_pose_callback, this);
 
     local_goal_pub = nh.advertise<geometry_msgs::PoseStamped>("/local_goal", 1);
 }

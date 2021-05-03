@@ -6,7 +6,6 @@
 #include<roomba_500driver_meiji/RoombaCtrl.h>
 #include<tf/tf.h>
 #include<sensor_msgs/LaserScan.h>
-#include<geometry_msgs/PoseStamped.h>
 #include<geometry_msgs/PoseArray.h>
 #include<nav_msgs/OccupancyGrid.h>
 #include<random>
@@ -86,14 +85,14 @@ class Localizer
         ros::Subscriber map_sub;
         ros::Subscriber laser_sub;
         ros::Subscriber odometry_sub;
-        ros::Publisher mcl_pose_pub;
+        ros::Publisher estimated_pose_pub;
         ros::Publisher p_pose_array_pub;
 
         nav_msgs::OccupancyGrid map;
         sensor_msgs::LaserScan laser;
         nav_msgs::Odometry current_odometry;
         nav_msgs::Odometry previous_odometry;
-        geometry_msgs::PoseStamped mcl_pose;
+        geometry_msgs::PoseStamped estimated_pose;
         geometry_msgs::PoseArray p_pose_array;
         std::vector<Particle> p_array;
 
