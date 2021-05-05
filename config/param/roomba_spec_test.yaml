@@ -1,0 +1,4 @@
+hz: 10
+direct_control_mode: false
+input_speed: 1.0
+input_yawrate: 1.0

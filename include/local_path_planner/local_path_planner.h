@@ -40,6 +40,7 @@ class LocalPathPlanner
         void visualize_trajectory(std::vector<State> &trajectory, ros::Publisher &publisher);
 
         int hz;
+        double goal_tolerance;
         
         double roomba_radius;
         double max_speed;

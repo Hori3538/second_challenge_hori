@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+
+<launch>
+    <node name="urg_node" pkg="urg_node" type="urg_node">
+        <param name="serial_port" value="/dev/ttyACM0"/>
+    </node>
+    <node name="roomba_500driver_meiji" pkg="roomba_500driver_meiji" type="main500">
+        <param name="serial_port" value="/dev/ttyUSB0"/>
+    </node>
+    <node pkg="joy" name="joy_node" type="joy_node"/>
+    <node pkg="roomba_teleop_meiji" type="electric_joystick_drive" name="electric_joystick_drive"/>
+    <node pkg="second_challenge_hori" type="roomba_spec_test" name="roomba_spec_test" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/roomba_spec_test.yaml" command="load"/>
+    </node>
+</launch>

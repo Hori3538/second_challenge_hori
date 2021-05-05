@@ -16,6 +16,7 @@ LocalPathPlanner::LocalPathPlanner():private_nh("~")
     private_nh.getParam("heading_score_gain", heading_score_gain);
     private_nh.getParam("velocity_score_gain", velocity_score_gain);
     private_nh.getParam("dist_score_gain", dist_score_gain);
+    private_nh.getParam("goal_tolerance", goal_tolerance);
 
 
     local_goal_sub = nh.subscribe("/local_goal", 1, &LocalPathPlanner::local_goal_callback, this);
@@ -142,7 +143,7 @@ std::vector<double> LocalPathPlanner::decide_input()
     std::vector<double> input{0.0, 0.0};
     double goal_to_dist = sqrt(std::pow(local_goal_point.point.x, 2) +
                                std::pow(local_goal_point.point.y, 2));
-    if(goal_to_dist <= roomba_radius){
+    if(goal_to_dist <= roomba_radius * goal_tolerance){
         return input;
     }
 

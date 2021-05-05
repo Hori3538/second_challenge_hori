@@ -18,8 +18,11 @@
     <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
         <rosparam file="$(find second_challenge_hori)/config/param/local_map_creator.yaml" command="load"/>
     </node>
-    <node pkg="second_challenge_hori" type="local_path_planner" name="local_path_planner" output="screen">
+    <node pkg="second_challenge_hori" type="local_path_planner" name="local_path_planner">
         <rosparam file="$(find second_challenge_hori)/config/param/local_path_planner.yaml" command="load"/>
     </node>
     <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/dev_merge.rviz" output="screen"/>
+    <node pkg="second_challenge_hori" type="roomba_spec_test" name="roomba_spec_test" output="screen">
+        <rosparam file="$(find second_challenge_hori)/config/param/roomba_spec_test.yaml" command="load"/>
+    </node>
 </launch>
