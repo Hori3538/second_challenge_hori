@@ -1,28 +1,28 @@
 #include <instant_gpp/instant_gpp.h>
 
-Instant_gpp::Instant_gpp():private_nh("~")
+InstantGpp::InstantGpp():private_nh("~")
 {
     private_nh.getParam("hz", hz);
 
-    map_sub = nh.subscribe("/map", 100, &Instant_gpp::map_callback, this);
-    path_pub = nh.advertise<nav_msgs::Path>("/path", 100);
-    path.header.frame_id = "map";
+    map_sub = nh.subscribe("/map", 1, &InstantGpp::map_callback, this);
+    global_path_pub = nh.advertise<nav_msgs::Path>("/global_path", 1);
+    global_path.header.frame_id = "map";
 }
 
-void Instant_gpp::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
+void InstantGpp::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
 {
     map = *msg;
-    make_path();
+    make_global_path();
     map_get_check = true;
 }
 
-void Instant_gpp::make_path()
+void InstantGpp::make_global_path()
 {
-    path.poses.clear();
-    path.poses.reserve(2000);
+    global_path.poses.clear();
+    global_path.poses.reserve(2000);
     double res = map.info.resolution;
     geometry_msgs::PoseStamped pose;
-    for(int i=0; i<5; i++){
+    for(int i=0; i<int(goal_points.size()); i++){
         double start_x = goal_points[i].first;
         double start_y = goal_points[i].second;
         double goal_x = goal_points[i+1].first;
@@ -32,13 +32,13 @@ void Instant_gpp::make_path()
             if(goal_x > start_x){
                 for(double x=start_x; x<goal_x; x+=res){
                     pose.pose.position.x = x;
-                    path.poses.push_back(pose);
+                    global_path.poses.push_back(pose);
                 }
             }
             else{
                 for(double x=start_x; x>goal_x; x-=res){
                     pose.pose.position.x = x;
-                    path.poses.push_back(pose);
+                    global_path.poses.push_back(pose);
                 }
             }
         }
@@ -47,35 +47,36 @@ void Instant_gpp::make_path()
             if(goal_y > start_y){
                 for(double y=start_y; y<goal_y; y+=res){
                     pose.pose.position.y = y;
-                    path.poses.push_back(pose);
+                    global_path.poses.push_back(pose);
                 }
             }
             else{
                 for(double y=start_y; y>goal_y; y-=res){
                     pose.pose.position.y = y;
-                    path.poses.push_back(pose);
+                    global_path.poses.push_back(pose);
                 }
             }
         }
     }
 }
 
-void Instant_gpp::process()
+void InstantGpp::process()
 {
-    ros::Rate rate(hz);
+    ros::Rate loop_rate(hz);
     while(ros::ok()){
         if(map_get_check){
-        path_pub.publish(path);
+        global_path_pub.publish(global_path);
         }
         ros::spinOnce();
-        rate.sleep();
+        loop_rate.sleep();
     }
 }
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "Instant_gpp");
-    Instant_gpp instant_gpp;
+    ros::init(argc, argv, "instant_gpp");
+    InstantGpp instant_gpp;
     instant_gpp.process();
+
     return 0;
 }

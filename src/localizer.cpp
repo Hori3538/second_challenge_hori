@@ -30,11 +30,11 @@ Localizer::Localizer():private_nh("~")
 
 
     map_sub = nh.subscribe("/map", 1, &Localizer::map_callback, this);
-    laser_sub = nh.subscribe("/scan", 1, &Localizer::laser_callback, this);
-    odometry_sub = nh.subscribe("/roomba/odometry", 1, &Localizer::odometry_callback, this);
+    laser_sub = nh.subscribe("/scan", 10, &Localizer::laser_callback, this);
+    odometry_sub = nh.subscribe("/roomba/odometry", 10, &Localizer::odometry_callback, this);
 
-    estimated_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/estimated_pose", 100);
-    p_pose_array_pub = nh.advertise<geometry_msgs::PoseArray>("/p_pose_array", 100);
+    estimated_pose_pub = nh.advertise<geometry_msgs::PoseStamped>("/estimated_pose", 10);
+    p_pose_array_pub = nh.advertise<geometry_msgs::PoseArray>("/p_pose_array", 10);
 
     estimated_pose.pose.position.x = 0.0;
     estimated_pose.pose.position.y = 0.0;
@@ -51,8 +51,8 @@ void Localizer::laser_callback(const sensor_msgs::LaserScan::ConstPtr &msg)
     if(map_get_ok){
         observation_update();
     }
-
 }
+
 void Localizer::map_callback(const nav_msgs::OccupancyGrid::ConstPtr &msg)
 {
     map = *msg;
@@ -101,13 +101,21 @@ void Localizer::create_p_pose_array_from_p_array(std::vector<Particle> &p_array)
     }
 }
 
+double  Localizer::adjust_yaw(double yaw)
+{
+    if(yaw > M_PI){yaw -= 2*M_PI;}
+    if(yaw < -M_PI){yaw += 2*M_PI;}
+
+    return yaw;
+}
+
 void Localizer::motion_update()
 {
     double dx = current_odometry.pose.pose.position.x - previous_odometry.pose.pose.position.x;
     double dy = current_odometry.pose.pose.position.y - previous_odometry.pose.pose.position.y;
-    double current_yaw = create_yaw_from_msg(current_odometry.pose.pose.orientation);
-    double previous_yaw = create_yaw_from_msg(previous_odometry.pose.pose.orientation);
-    double dyaw = substract_yawA_from_yawB(previous_yaw, current_yaw);
+    double current_yaw = tf::getYaw(current_odometry.pose.pose.orientation);
+    double previous_yaw = tf::getYaw(previous_odometry.pose.pose.orientation);
+    double dyaw = adjust_yaw(current_yaw - previous_yaw);
     double dtrans = sqrt(dx*dx + dy*dy);
     double drot1 = adjust_yaw(atan2(dy, dx) - previous_yaw);
     double drot2 = adjust_yaw(dyaw - drot1);
@@ -142,6 +150,24 @@ double Localizer::dist_from_p_to_wall(double x_start, double y_start, double yaw
         }
     }
     return search_limit;
+}
+
+double Localizer::calc_w(geometry_msgs::PoseStamped &pose)
+{
+    double weight = 0;
+    double angle_increment =laser.angle_increment;
+    double angle_min = laser.angle_min;
+    double x = pose.pose.position.x;
+    double y = pose.pose.position.y;
+    double yaw = tf::getYaw(pose.pose.orientation);
+    for(int i=0, size=laser.ranges.size(); i<size; i+=laser_step){
+        if(laser.ranges[i] > 0.2){
+            double angle = i * angle_increment + angle_min;
+            double dist_to_wall = dist_from_p_to_wall(x, y, yaw + angle, laser.ranges[i]);
+            weight += gaussian(laser.ranges[i], laser.ranges[i] * laser_noise_ratio, dist_to_wall);
+        }
+    }
+    return weight;
 }
 
 void Localizer::normalize_w()
@@ -181,7 +207,7 @@ void Localizer::adaptive_resampling()
 
             double x = estimated_pose.pose.position.x;
             double y = estimated_pose.pose.position.y;
-            double yaw = create_yaw_from_msg(estimated_pose.pose.orientation);
+            double yaw = tf::getYaw(estimated_pose.pose.orientation);
 
             p.set_p(x, y, yaw, reset_x_sigma, reset_y_sigma, reset_yaw_sigma);
 
@@ -196,7 +222,7 @@ void Localizer::expansion_reset()
     for(auto& p:p_array){
         double x = p.p_pose.pose.position.x;
         double y = p.p_pose.pose.position.y;
-        double yaw = create_yaw_from_msg(p.p_pose.pose.orientation);
+        double yaw = tf::getYaw(p.p_pose.pose.orientation);
 
         p.set_p(x, y, yaw, expansion_x_speed, expansion_y_speed, expansion_yaw_speed);
     }
@@ -231,7 +257,6 @@ void Localizer::observation_update()
         reset_count += 1;
         expansion_reset();
     }
-
 }
 
 void Localizer::estimate_pose()
@@ -246,7 +271,7 @@ void Localizer::estimate_pose()
         y += p.p_pose.pose.position.y * p.w;
         if(p.w > w_max){
             w_max = p.w;
-            yaw = create_yaw_from_msg(p.p_pose.pose.orientation);
+            yaw = tf::getYaw(p.p_pose.pose.orientation);
         }
     }
 
@@ -257,22 +282,21 @@ void Localizer::estimate_pose()
 void Localizer::process()
 {
     //TF Broadcasterの実体化
-    tf::TransformBroadcaster odom_state_broadcaster;
-    
-    ros::Rate rate(hz);
+    tf2_ros::TransformBroadcaster odom_state_broadcaster;    
+    ros::Rate loop_rate(hz);
     while(ros::ok()){
         if(map_get_ok && odometry_get_ok){
             try{
                 //map座標で見たbase_linkの位置の取得
                 double map_to_base_x = estimated_pose.pose.position.x;
                 double map_to_base_y = estimated_pose.pose.position.y;
-                double map_to_base_yaw = create_yaw_from_msg(estimated_pose.pose.orientation);
+                double map_to_base_yaw = tf::getYaw(estimated_pose.pose.orientation);
                 //odom座標で見たbase_linkの位置の取得
                 double odom_to_base_x = current_odometry.pose.pose.position.x;
                 double odom_to_base_y = current_odometry.pose.pose.position.y;
-                double odom_to_base_yaw = create_yaw_from_msg(current_odometry.pose.pose.orientation);
+                double odom_to_base_yaw = tf::getYaw(current_odometry.pose.pose.orientation);
                 //map座標で見たodom座標の位置の取得
-                double map_to_odom_yaw = substract_yawA_from_yawB(odom_to_base_yaw, map_to_base_yaw);
+                double map_to_odom_yaw = adjust_yaw(map_to_base_yaw - odom_to_base_yaw);
                 double map_to_odom_x = map_to_base_x - odom_to_base_x * cos(map_to_odom_yaw) + odom_to_base_y * sin(map_to_odom_yaw);
                 double map_to_odom_y = map_to_base_y - odom_to_base_x * sin(map_to_odom_yaw) - odom_to_base_y * cos(map_to_odom_yaw);
                 geometry_msgs::Quaternion map_to_odom_quat;
@@ -292,16 +316,15 @@ void Localizer::process()
                 //tf情報をbroadcast(座標系の設定)
                 odom_state_broadcaster.sendTransform(odom_state);
             }
-            catch(tf::TransformException &ex){
+            catch(tf2::TransformException &ex){
                 ROS_ERROR("%s", ex.what());
-                ros::Duration(1.0).sleep();
             }
             create_p_pose_array_from_p_array(p_array);
             p_pose_array_pub.publish(p_pose_array);
             estimated_pose_pub.publish(estimated_pose);
         }
         ros::spinOnce();
-        rate.sleep();
+        loop_rate.sleep();
     }
 }
 Localizer::Particle::Particle(Localizer* localizer)
@@ -320,59 +343,17 @@ void Localizer::Particle::set_p(double x, double y, double yaw, double x_sigma, 
     quaternionTFToMsg(tf::createQuaternionFromYaw(yaw),p_pose.pose.orientation);
 }
 
-double Localizer::create_yaw_from_msg(geometry_msgs::Quaternion q)
-{
-    double roll, pitch, yaw;
-    tf::Quaternion quaternion(q.x, q.y, q.z, q.w);
-    tf::Matrix3x3(quaternion).getRPY(roll, pitch, yaw);
-    return yaw;
-}
-
-double Localizer::substract_yawA_from_yawB(double yawA, double yawB)
-{
-    double dyaw = yawB - yawA;
-    dyaw = adjust_yaw(dyaw);
-
-    return dyaw;
-}
-
 void Localizer::Particle::p_move(double dtrans, double drot1, double drot2)
 {
     dtrans += mcl->gaussian(0.0, dtrans * mcl->move_noise_ratio);
     drot1 += mcl->gaussian(0.0, drot1 * mcl->move_noise_ratio);
     drot2 += mcl->gaussian(0.0, drot2 * mcl->move_noise_ratio);
 
-    double yaw = mcl->create_yaw_from_msg(p_pose.pose.orientation);
+    double yaw = tf::getYaw(p_pose.pose.orientation);
     p_pose.pose.position.x += dtrans * cos(mcl->adjust_yaw(yaw + drot1));
     p_pose.pose.position.y += dtrans * sin(mcl->adjust_yaw(yaw + drot1));
     quaternionTFToMsg(tf::createQuaternionFromYaw(mcl->adjust_yaw(yaw + drot1 + drot2)), p_pose.pose.orientation);
 
-}
-
-double Localizer::calc_w(geometry_msgs::PoseStamped &pose)
-{
-    double weight = 0;
-    double angle_increment =laser.angle_increment;
-    double angle_min = laser.angle_min;
-    double x = pose.pose.position.x;
-    double y = pose.pose.position.y;
-    double yaw = create_yaw_from_msg(pose.pose.orientation);
-    for(int i=0, size=laser.ranges.size(); i<size; i+=laser_step){
-        if(laser.ranges[i] > 0.2){
-            double angle = i * angle_increment + angle_min;
-            double dist_to_wall = dist_from_p_to_wall(x, y, yaw + angle, laser.ranges[i]);
-            weight += gaussian(laser.ranges[i], laser.ranges[i] * laser_noise_ratio, dist_to_wall);
-        }
-    }
-    return weight;
-}
-
-double  Localizer::adjust_yaw(double yaw)
-{
-    if(yaw > M_PI){yaw -= 2*M_PI;}
-    if(yaw < -M_PI){yaw += 2*M_PI;}
-
-    return yaw;
 }
 
 int main(int argc, char **argv)
@@ -380,5 +361,6 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "Localizer");
     Localizer localizer;
     localizer.process();
+    
     return 0;
 }

@@ -33,7 +33,6 @@ LocalPathPlanner::LocalPathPlanner():private_nh("~")
 void LocalPathPlanner::local_goal_callback(const geometry_msgs::PoseStamped::ConstPtr &msg)
 {
     local_goal = *msg;
-    local_goal.pose.orientation.w = 1;
 
     try{
         geometry_msgs::TransformStamped transform;

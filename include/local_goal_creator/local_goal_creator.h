@@ -5,13 +5,13 @@
 #include <nav_msgs/Path.h>
 #include <geometry_msgs/PoseStamped.h>
 
-class Local_goal_creator
+class LocalGoalCreator
 {
     public:
-        Local_goal_creator();
+        LocalGoalCreator();
         void process();
     private:
-        void path_callback(const nav_msgs::Path::ConstPtr &msg);
+        void global_path_callback(const nav_msgs::Path::ConstPtr &msg);
         void estimated_pose_callback(const geometry_msgs::PoseStamped::ConstPtr &msg);
         void select_local_goal();
 
@@ -19,17 +19,18 @@ class Local_goal_creator
         double local_goal_dist;
 
         int goal_index = 0;
-        bool path_get_check = false;
+        bool global_path_get_check = false;
         bool estimated_pose_check = false;
 
         ros::NodeHandle nh;
         ros::NodeHandle private_nh;
-        ros::Subscriber path_sub;
+        ros::Subscriber global_path_sub;
         ros::Subscriber estimated_pose_sub;
         ros::Publisher local_goal_pub;
 
-        nav_msgs::Path path;
+        nav_msgs::Path global_path;
         geometry_msgs::PoseStamped estimated_pose;
         geometry_msgs::PoseStamped local_goal;
 };
+
 #endif

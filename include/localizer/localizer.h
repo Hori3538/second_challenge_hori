@@ -1,15 +1,13 @@
 #ifndef LOCALIZER_H
 #define LOCALIZER_H
 
-#include<ros/ros.h>
 #include<nav_msgs/Odometry.h>
-#include<roomba_500driver_meiji/RoombaCtrl.h>
 #include<tf/tf.h>
 #include<sensor_msgs/LaserScan.h>
 #include<geometry_msgs/PoseArray.h>
 #include<nav_msgs/OccupancyGrid.h>
 #include<random>
-#include<tf/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
 
 class Localizer
 {
@@ -36,9 +34,7 @@ class Localizer
         double gaussian(double mu, double sigma);
         double gaussian(double mu, double sigma, double x);
         void create_p_pose_array_from_p_array(std::vector<Particle> &p_array);
-        double substract_yawA_from_yawB(double yawA, double yawB);
         double adjust_yaw(double yaw);
-        double create_yaw_from_msg(geometry_msgs::Quaternion q);
         void motion_update();
         int xy_to_map_index(double x, double y);
         double dist_from_p_to_wall(double x_start, double y_start, double yaw, double laser_range);
@@ -79,7 +75,6 @@ class Localizer
         bool odometry_get_ok = false;
         int reset_count = 0;
 
-
         ros::NodeHandle private_nh;
         ros::NodeHandle nh;
         ros::Subscriber map_sub;
@@ -95,7 +90,6 @@ class Localizer
         geometry_msgs::PoseStamped estimated_pose;
         geometry_msgs::PoseArray p_pose_array;
         std::vector<Particle> p_array;
-
 };
 
 #endif
