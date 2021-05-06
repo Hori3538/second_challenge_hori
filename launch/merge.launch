@@ -10,8 +10,7 @@
         <param name="hz" value="1" type="int"/>
     </node>
     <node pkg="second_challenge_hori" type="local_goal_creator" name="local_goal_creator">
-        <param name="hz" value="10" type="int"/>
-        <param name="local_goal_dist" value="3.0" type="double"/>
+        <rosparam file="$(find second_challenge_hori)/config/param/local_goal_creator.yaml" command="load"/>
     </node>
     <node pkg="second_challenge_hori" type="local_map_creator" name="local_map_creator" output="screen">
         <rosparam file="$(find second_challenge_hori)/config/param/local_map_creator.yaml" command="load"/>

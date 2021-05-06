@@ -17,10 +17,12 @@ class LocalGoalCreator
 
         int hz;
         double local_goal_dist;
+        int lap_num;
 
         int goal_index = 0;
-        bool global_path_get_check = false;
-        bool estimated_pose_check = false;
+        int lap_count = 1;
+        bool global_path_get_flag = false;
+        bool estimated_pose_get_flag = false;
 
         ros::NodeHandle nh;
         ros::NodeHandle private_nh;

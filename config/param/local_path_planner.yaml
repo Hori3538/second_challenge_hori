@@ -2,6 +2,8 @@ hz: 10
 goal_tolerance: 2.0
 
 roomba_radius: 0.17
+spec_speed: 1.0
+spec_yawrate: 1.0
 max_speed: 0.3
 min_speed: 0.0
 max_yawrate: 2.0

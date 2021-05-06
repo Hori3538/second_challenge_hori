@@ -43,6 +43,8 @@ class LocalPathPlanner
         double goal_tolerance;
         
         double roomba_radius;
+        double spec_speed;
+        double spec_yawrate;
         double max_speed;
         double min_speed;
         double max_yawrate;
