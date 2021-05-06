@@ -5,7 +5,7 @@ RoombaSpecTest::RoombaSpecTest():private_nh("~")
     private_nh.getParam("hz", hz);
     private_nh.getParam("direct_control_mode", direct_control_mode);
     private_nh.getParam("input_speed", input_speed);
-    private_nh.getParam("intput_yawrate", input_yawrate);
+    private_nh.getParam("input_yawrate", input_yawrate);
 
     odometry_sub = nh.subscribe("/roomba/odometry", 10, &RoombaSpecTest::odometry_callback, this);
     roomba_control_pub = nh.advertise<roomba_500driver_meiji::RoombaCtrl>("/roomba/control", 10);
@@ -20,7 +20,7 @@ void RoombaSpecTest::odometry_callback(const nav_msgs::Odometry::ConstPtr &msg)
 }
 
 void RoombaSpecTest::roomba_ctrl(double speed, double yawrate)
-{ 
+{
     roomba_500driver_meiji::RoombaCtrl roomba_control;
     roomba_control.mode = 11;
     roomba_control.cntl.linear.x = speed;

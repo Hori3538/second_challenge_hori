@@ -4,8 +4,6 @@ LocalPathPlanner::LocalPathPlanner():private_nh("~")
 {
     private_nh.getParam("hz", hz);
     private_nh.getParam("roomba_radius", roomba_radius);
-    private_nh.getParam("spec_speed", spec_speed);
-    private_nh.getParam("spec_yawrate", spec_yawrate);
     private_nh.getParam("max_speed", max_speed);
     private_nh.getParam("min_speed", min_speed);
     private_nh.getParam("max_yawrate", max_yawrate);
@@ -189,8 +187,8 @@ void LocalPathPlanner::roomba_ctrl(double speed, double yawrate)
 {
     roomba_500driver_meiji::RoombaCtrl roomba_control;
     roomba_control.mode = 11;
-    roomba_control.cntl.linear.x = speed / spec_speed;
-    roomba_control.cntl.angular.z = yawrate / spec_yawrate;
+    roomba_control.cntl.linear.x = speed;
+    roomba_control.cntl.angular.z = yawrate;
     roomba_control_pub.publish(roomba_control);
 }
 
