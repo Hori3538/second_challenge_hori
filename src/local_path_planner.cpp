@@ -178,7 +178,7 @@ std::vector<double> LocalPathPlanner::decide_input()
         }
     }
     previous_input = input;
-    std::cout << "h " << bhs << " d " << bds << " v " << bvs << std::endl;
+    // std::cout << "h " << bhs << " d " << bds << " v " << bvs << std::endl;
     // std::cout << "Input: " << input[0] << "  " << input[1] << std::endl;
     return input;
 }
