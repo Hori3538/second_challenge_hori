@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+
+<launch>
+    <node pkg="rosbag" name="play" type="play" args="--clock $(env HOME)/challenge.bag"/>
+    <param name="use_sim_time" value="true" type="bool"/>
+    <node pkg="rviz" name="rviz" type="rviz" args="-d $(find second_challenge_hori)/config/rviz/dev_merge.rviz" output="screen"/>
+</launch>
